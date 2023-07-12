@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chatbot Menu</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f2f2f2;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .conversation {
+      margin-bottom: 20px;
+      padding: 10px;
+      background-color: #f5f5f5;
+      border-radius: 5px;
+    }
+
+    .input-container {
+      display: flex;
+      margin-bottom: 20px;
+    }
+
+    .input-field {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .input-button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Chatbot Menu</h1>
+    <div class="conversation" id="conversation"></div>
+    <div class="input-container">
+      <input type="text" class="input-field" id="input1" placeholder="Enter input 1">
+      <button class="input-button" onclick="sendInput(1, '/api/first_string')">Send Input 1</button>
+    </div>
+    <div class="input-container">
+      <input type="text" class="input-field" id="input2" placeholder="Enter input 2">
+      <button class="input-button" onclick="sendInput(2, '/api/second_string')">Send Input 2</button>
+    </div>
+  </div>
+
+  <script>
+    function appendToConversation(text) {
+      var conversation = document.getElementById('conversation');
+      conversation.innerHTML += '<p>' + text + '</p>';
+    }
+
+    function sendInput(inputNumber, route) {
+      var inputField = document.getElementById('input' + inputNumber);
+      var inputText = inputField.value;
+      inputField.value = '';
+
+      var inputData = {};
+      if (inputNumber === 1) {
+        inputData.first_string = inputText;
+      } else if (inputNumber === 2) {
+        inputData.second_string = inputText;
+      }
+
+      // Send the input to the server (replace <server_url> with your server URL)
+      fetch('https://b4b3-34-74-188-51.ngrok-free.app' + route, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(inputData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if ('first_string' in data) {
+          appendToConversation('User Input ' + inputNumber + ': ' + inputText);
+          appendToConversation('Chatbot Response (first_string): ' + data.first_string);
+        } else if ('second_string' in data) {
+          appendToConversation('User Input ' + inputNumber + ': ' + inputText);
+          appendToConversation('Chatbot Response (second_string): ' + data.second_string);
+        } else {
+          appendToConversation('Unexpected response format.');
+        }
+      });
+    }
+  </script>
+</body>
+</html>
